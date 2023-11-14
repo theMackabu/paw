@@ -1,6 +1,7 @@
 use psutil::process::{MemoryInfo, Process};
 use std::io::{self, Read};
 use std::process::{Command, Stdio};
+use std::thread::{sleep, spawn};
 use std::time::{Duration, Instant};
 
 #[derive(Debug)]
@@ -24,9 +25,9 @@ pub struct PawProcess<'a> {
 
 #[derive(Debug, Clone)]
 pub struct PawInfo {
-    pub memory_usage: Option<MemoryInfo>,
-    pub cpu_usage: f64,
     pub uptime: u128,
+    pub memory_usage: Option<MemoryInfo>,
+    pub cpu_percent: Option<f32>,
 }
 
 #[derive(Debug, Clone)]
@@ -52,7 +53,7 @@ impl Paw {
         let start_time = Instant::now();
 
         let stdout_handle = child.stdout.take().unwrap();
-        let stdout_thread = std::thread::spawn(move || {
+        let stdout_thread = spawn(move || {
             let mut buffer = String::new();
             let mut reader = io::BufReader::new(stdout_handle);
             reader.read_to_string(&mut buffer).unwrap();
@@ -60,20 +61,17 @@ impl Paw {
         });
 
         loop {
+            let uptime = start_time.elapsed().as_millis();
             let mut memory_usage: Option<MemoryInfo> = None;
-            if let Ok(process) = Process::new(pid) {
-                if let Ok(info) = process.memory_info() {
-                    memory_usage = Some(info);
-                }
+            let mut cpu_percent: Option<f32> = None;
+
+            if let Ok(mut process) = Process::new(pid) {
+                memory_usage = process.memory_info().ok();
+                cpu_percent = process.cpu_percent().ok();
             }
 
-            let elapsed_time = start_time.elapsed().as_millis();
             let result = PawResult {
-                info: PawInfo {
-                    memory_usage,
-                    cpu_usage: 0.0,
-                    uptime: elapsed_time,
-                },
+                info: PawInfo { memory_usage, cpu_percent, uptime },
                 process: PawProcess {
                     cmd: &self.command,
                     args: &self.arguments,
@@ -81,7 +79,7 @@ impl Paw {
             };
 
             callback(result);
-            std::thread::sleep(self.duration);
+            sleep(self.duration);
 
             if let Some(status) = child.try_wait()? {
                 done = PawDone {

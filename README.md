@@ -43,7 +43,3 @@ To run the tests, simply run the following command:
 ```
 cargo test
 ```
-
-### Contributing
-
-If you would like to contribute to Paw, please feel free to open an issue or pull request on GitHub.
