@@ -1,39 +1,17 @@
+mod structs;
+
 use psutil::process::{MemoryInfo, Process};
 use std::io::{self, Read};
 use std::process::{Command, Stdio};
 use std::thread::{sleep, spawn};
 use std::time::{Duration, Instant};
+use structs::{PawDone, PawInfo, PawProcess, PawResult};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Paw {
     command: String,
     arguments: Vec<String>,
     duration: Duration,
-}
-
-#[derive(Debug, Clone)]
-pub struct PawResult<'a> {
-    pub info: PawInfo,
-    pub process: PawProcess<'a>,
-}
-
-#[derive(Debug, Clone)]
-pub struct PawProcess<'a> {
-    pub cmd: &'a String,
-    pub args: &'a Vec<String>,
-}
-
-#[derive(Debug, Clone)]
-pub struct PawInfo {
-    pub uptime: u128,
-    pub memory_usage: Option<MemoryInfo>,
-    pub cpu_percent: Option<f32>,
-}
-
-#[derive(Debug, Clone)]
-pub struct PawDone {
-    pub stdout: String,
-    pub code: Option<i32>,
 }
 
 impl Paw {
@@ -73,8 +51,8 @@ impl Paw {
             let result = PawResult {
                 info: PawInfo { memory_usage, cpu_percent, uptime },
                 process: PawProcess {
-                    cmd: &self.command,
-                    args: &self.arguments,
+                    cmd: self.command.clone(),
+                    args: self.arguments.clone(),
                 },
             };
 

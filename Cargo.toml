@@ -7,4 +7,6 @@ repository = "https://lab.themackabu.dev/crates/pawd"
 description = "Process analysis & watcher daemon"
 
 [dependencies]
-psutil = "3.2.2"
+psutil = { version = "3.2.2", features = ["serde"] }
+serde = "1.0.192"
+serde_derive = "1.0.192"
