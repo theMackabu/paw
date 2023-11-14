@@ -1,0 +1,10 @@
+[package]
+name = "pawd"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://lab.themackabu.dev/crates/pawd"
+description = "Process analysis & watcher daemon"
+
+[dependencies]
+psutil = "3.2.2"
