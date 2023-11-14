@@ -7,6 +7,7 @@ use std::thread::{sleep, spawn};
 use std::time::{Duration, Instant};
 use structs::{PawDone, PawInfo, PawProcess, PawResult};
 
+/// Represents a process watcher that monitors the resource usage of a child process.
 #[derive(Debug, Clone)]
 pub struct Paw {
     command: String,
@@ -15,6 +16,7 @@ pub struct Paw {
 }
 
 impl Paw {
+    /// Creates a new `Paw` instance with the specified command, arguments, and duration.
     pub fn new<T: AsRef<str>>(command: &str, arguments: &[T], duration: u64) -> Paw {
         Paw {
             command: command.to_string(),
@@ -23,6 +25,15 @@ impl Paw {
         }
     }
 
+    /// Watches the process and calls the provided callback with the result at regular intervals.
+    ///
+    /// # Arguments
+    ///
+    /// * `callback` - A callback function that takes a `PawResult` as its parameter.
+    ///
+    /// # Returns
+    ///
+    /// Returns a `Result` containing a `PawDone` indicating the completion status.
     pub fn watch<F: Fn(PawResult) + Send + 'static>(&self, callback: F) -> Result<PawDone, Box<dyn std::error::Error>> {
         let mut child = Command::new(&self.command).args(&self.arguments).stdout(Stdio::piped()).spawn()?;
 
