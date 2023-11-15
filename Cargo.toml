@@ -10,3 +10,6 @@ description = "Process analysis & watcher daemon"
 psutil = { version = "3.2.2", features = ["serde"] }
 serde = "1.0.192"
 serde_derive = "1.0.192"
+
+[dev-dependencies]
+assert_matches = "1.5.0"

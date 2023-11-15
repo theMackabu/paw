@@ -87,17 +87,24 @@ impl Paw {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use assert_matches::assert_matches;
 
     #[test]
     fn watch() {
         let paw = Paw::new("node", &["tests/test.js"], 500);
         let callback = move |result: PawResult| {
-            println!("{:?}", result);
+            assert_matches!(
+                result,
+                PawResult {
+                    info: PawInfo { .. },
+                    process: PawProcess { .. }
+                }
+            );
         };
 
         match paw.watch(callback) {
-            Ok(result) => println!("{:?}", result),
-            Err(error) => println!("{error}"),
+            Ok(result) => assert_matches!(result, PawDone { .. }),
+            Err(error) => panic!("{error}"),
         }
     }
 }
