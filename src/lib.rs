@@ -84,6 +84,14 @@ impl Paw {
     }
 }
 
+impl PawResult {
+    pub fn to_json(&self) -> String { serde_json::to_string(self).unwrap() }
+}
+
+impl PawDone {
+    pub fn to_json(&self) -> String { serde_json::to_string(self).unwrap() }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

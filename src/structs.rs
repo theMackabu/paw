@@ -1,5 +1,5 @@
 use psutil::process::MemoryInfo;
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct PawResult {
